@@ -1,28 +1,14 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "../App.css";
-import {
-  Link,
-  useNavigate,
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import ErrorPage from "./Error";
-import AlbumsPage from "./AlbumsPage";
-import RootLayout from "./Root";
-import "../App.css";
+import { Link } from "react-router-dom";
 
 const CLIENT_ID = "8e200c733f8d4bc6a852f81aff924092";
 const CLIENT_SECRET = "0e03edbfeb974d4184a98f5a6508c649";
 
 function ProductDetailPage() {
   const params = useParams();
-  const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const [artistName, setArtistName] = useState([]);
-  const [albums, setAlbums] = useState([]);
-  const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
-  const [selectedAlbum, setSelectedAlbum] = useState(null);
   const [tracks, setTracks] = useState([]);
 
   useEffect(() => {

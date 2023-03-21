@@ -1,13 +1,4 @@
-import {
-  Link,
-  useNavigate,
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-import ErrorPage from "./Error";
-import AlbumsPage from "./AlbumsPage";
-import RootLayout from "./Root";
-import ProductDetailPage from "./ProductDetail";
+import { Link } from "react-router-dom";
 import "../App.css";
 import { useState, useEffect } from "react";
 import search from "../components/Search";
@@ -20,7 +11,6 @@ function HomePage() {
   const [accessToken, setAccessToken] = useState("");
   const [artistName, setArtistName] = useState("");
   const [albums, setAlbums] = useState([]);
-  const [selectedCardIndex, setSelectedCardIndex] = useState(-1);
 
   useEffect(() => {
     const authParameters = {

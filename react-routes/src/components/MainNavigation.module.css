@@ -1,0 +1,43 @@
+body,
+html {
+  margin: 0 auto;
+  color: white;
+}
+
+.header {
+  max-width: 60rem;
+  margin: auto;
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.list {
+  display: flex;
+  gap: 1rem;
+}
+
+.list a {
+  text-decoration: none;
+  color: #e8c884;
+}
+
+a:hover,
+a.active {
+  color: #dbb86e;
+  text-decoration: underline;
+}
+
+.list a.active {
+  font-weight: bold;
+}
+
+a {
+  text-decoration: none;
+  color: #e8c884;
+}

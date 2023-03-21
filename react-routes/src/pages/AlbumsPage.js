@@ -24,40 +24,6 @@ function HomePage() {
       .then((data) => setAccessToken(data.access_token));
   }, []);
 
-  async function search() {
-    const searchParameters = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-
-    const response = await fetch(
-      `https://api.spotify.com/v1/search?q=${searchInput}&type=artist`,
-      searchParameters
-    );
-    const data = await response.json();
-    const artist = data.artists.items[0];
-    setArtistName(artist.name);
-
-    const albumResponse = await fetch(
-      `https://api.spotify.com/v1/artists/${artist.id}/albums?include_groups=album&market=US&limit=50`,
-      searchParameters
-    );
-    const albumData = await albumResponse.json();
-    setAlbums(albumData.items);
-
-    for (const album of albumData.items) {
-      const tracksResponse = await fetch(
-        `https://api.spotify.com/v1/albums/${album.id}/tracks`,
-        searchParameters
-      );
-      const tracksData = await tracksResponse.json();
-      console.log(`Tracks for album '${album.name}':`, tracksData.items);
-    }
-  }
-
   return (
     <div className="App">
       <header>
@@ -69,12 +35,17 @@ function HomePage() {
             type="input"
             onKeyDown={(event) => {
               if (event.key === "Enter") {
-                search();
+                search(accessToken, searchInput, setAlbums);
               }
             }}
             onChange={(event) => setSearchInput(event.target.value)}
           ></input>
-          <button name="button" onClick={search}>
+          <button
+            name="button"
+            onClick={function () {
+              search(accessToken, searchInput, setAlbums);
+            }}
+          >
             Search
           </button>
         </div>

@@ -1,15 +1,15 @@
-import { Link } from "react-router-dom";
 import "../App.css";
 import { useState, useEffect } from "react";
-import search from "../components/Search";
+import AlbumsCard from "../components/AlbumsCard";
+import ArtistName from "../components/ArtistName";
+import Header from "../components/Header";
 
 const CLIENT_ID = "8e200c733f8d4bc6a852f81aff924092";
 const CLIENT_SECRET = "0e03edbfeb974d4184a98f5a6508c649";
 
-function HomePage() {
+function HomePage(props) {
   const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const [artistName, setArtistName] = useState("");
   const [albums, setAlbums] = useState([]);
 
   useEffect(() => {
@@ -26,44 +26,16 @@ function HomePage() {
 
   return (
     <div className="App">
-      <header>
-        <h1>Search Spotify for an artist!</h1>
-        <div className="flex">
-          <input
-            className="input"
-            placeholder="Search artist's name..."
-            type="input"
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                search(accessToken, searchInput, setAlbums);
-              }
-            }}
-            onChange={(event) => setSearchInput(event.target.value)}
-          ></input>
-          <button
-            name="button"
-            onClick={function () {
-              search(accessToken, searchInput, setAlbums);
-            }}
-          >
-            Search
-          </button>
-        </div>
-      </header>
+      <Header
+        accessToken={accessToken}
+        searchInput={searchInput}
+        setAlbums={setAlbums}
+        setSearchInput={setSearchInput}
+        albums={albums}
+      />
       <div className="container">
-        <h1>{artistName}</h1>
-        <div className="cards">
-          {albums.map((album, index) => (
-            <div key={album.id}>
-              <div>
-                <Link to={`/albums/${album.id}`}>
-                  <img src={album.images[0].url} alt="album cover" />
-                </Link>
-              </div>
-              <div>{album.name}</div>
-            </div>
-          ))}
-        </div>
+        <ArtistName />
+        <AlbumsCard />
       </div>
     </div>
   );

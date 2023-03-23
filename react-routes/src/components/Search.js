@@ -1,4 +1,5 @@
-async function search(accessToken, searchInput, setAlbums) {
+async function search(accessToken, searchInput) {
+
   const searchParameters = {
     method: "GET",
     headers: {
@@ -12,16 +13,16 @@ async function search(accessToken, searchInput, setAlbums) {
     searchParameters
   );
   const data = await response.json();
-  console.log("data", data);
+
   const artist = data.artists.items[0];
-  console.log("artist", data.artists.items[0]);
+
   const albumResponse = await fetch(
     `https://api.spotify.com/v1/artists/${artist.id}/albums?include_groups=album&market=US&limit=50`,
     searchParameters
   );
-  //console.log("albumResponse", await albumResponse.json());
-  const albumData = albumResponse.json();
-  console.log("albumData", albumData);
+
+  const albumData = await albumResponse.json();
+
   const tracks = [];
 
   for (const album of albumData.items) {
@@ -32,9 +33,8 @@ async function search(accessToken, searchInput, setAlbums) {
     const tracksData = await tracksResponse.json();
     tracks.push(tracksData);
   }
-  console.log("album items", albumData.albums);
-  setAlbums(albumData.items);
-  return tracks;
+  console.log('albumData.items', albumData.items)
+  return albumData.items;
 }
 
 export default search;

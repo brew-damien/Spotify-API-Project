@@ -2,13 +2,13 @@ import "../App.css";
 import { useState, useEffect } from "react";
 import AlbumsCard from "../components/AlbumsCard";
 import ArtistName from "../components/ArtistName";
-import Header from "../components/Header";
+import SearchBlock from "../components/SearchBlock";
 
 const CLIENT_ID = "8e200c733f8d4bc6a852f81aff924092";
 const CLIENT_SECRET = "0e03edbfeb974d4184a98f5a6508c649";
 
 function HomePage(props) {
-  const [searchInput, setSearchInput] = useState("");
+  //const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [albums, setAlbums] = useState([]);
 
@@ -24,18 +24,30 @@ function HomePage(props) {
       .then((data) => setAccessToken(data.access_token));
   }, []);
 
+  const collectAlbums = albums => {
+    setAlbums(albums)
+    console.log(albums)
+  }
+
   return (
     <div className="App">
-      <Header
+      {/* <Header
         accessToken={accessToken}
         searchInput={searchInput}
         setAlbums={setAlbums}
         setSearchInput={setSearchInput}
         albums={albums}
-      />
+      /> */}
+      <h1>Search Spotify for an artist!</h1>
+
+      <SearchBlock 
+        accessToken={accessToken}  
+        callback={collectAlbums}
+        />
+      
       <div className="container">
         <ArtistName />
-        <AlbumsCard />
+        <AlbumsCard albums={albums} />
       </div>
     </div>
   );

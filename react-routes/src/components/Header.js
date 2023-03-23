@@ -1,4 +1,4 @@
-import SearchButton from "./SearchButton";
+import SearchButton from "./SearchBlock";
 
 function Header(props) {
   return (

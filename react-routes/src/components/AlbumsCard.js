@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 
 function AlbumsCard(props) {
-  console.log("albums", props.albums);
+  
   if (!props.albums) {
     return null;
   }

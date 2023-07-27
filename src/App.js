@@ -7,8 +7,9 @@ import ArtistProfilePage from "./ArtistProfilePage";
 import ArtistTracks from "./ArtistTracks";
 import TrackPageDetails from "./TrackPageDetails";
 
-const CLIENT_ID = "8e200c733f8d4bc6a852f81aff924092";
-const CLIENT_SECRET = "0e03edbfeb974d4184a98f5a6508c649";
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID
+console.log(CLIENT_ID)
+const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET
 
 function App() {
   const [searchInput, setSearchInput] = useState("");

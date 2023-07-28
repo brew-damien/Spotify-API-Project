@@ -8,7 +8,6 @@ import ArtistTracks from "./ArtistTracks";
 import TrackPageDetails from "./TrackPageDetails";
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID
-console.log(CLIENT_ID)
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET
 
 function App() {

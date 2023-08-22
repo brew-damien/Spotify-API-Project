@@ -43,8 +43,7 @@ function App() {
           throw new Error(`Fetch failed with status ${response.status}`);
         }
         const data = await response.json();
-        // Reverse the order of recent searches so that the newest is at the top
-        setRecentlySearchedArtists(data.reverse().slice(0, 5)); // Limit to 5 items
+        setRecentlySearchedArtists(data.reverse().slice(0, 5));
       } catch (error) {
         console.error("Error fetching recent searches:", error);
       }
@@ -98,10 +97,9 @@ function App() {
       console.error("Error adding search query to the database");
     }
 
-    // Reverse the order of recent searches after adding the new search
     setRecentlySearchedArtists((prevSearches) =>
       [{ search_query: searchInput }, ...prevSearches.slice(0, 4)].slice(0, 5)
-    ); // Limit to 5 items
+    );
   }
 
   function handleHistoryItemClick(searchQuery) {

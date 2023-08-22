@@ -19,7 +19,6 @@ function App() {
   const [albums, setAlbums] = useState([]);
 
   useEffect(() => {
-    // Fetch access token
     const authParameters = {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -34,7 +33,6 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch recent search history
     async function fetchRecentSearches() {
       const url = `${API_URL}`;
 
@@ -75,10 +73,33 @@ function App() {
       alert("Artist not found. Please try another search term.");
     }
 
-    // After searching, add the search query to recently searched artists
+    // After searching, add the search query and time to the database
+    const searchTimestamp = new Date().toISOString();
+    const searchQueryData = {
+      search_query: searchInput,
+      search_timestamp: searchTimestamp,
+    };
+
+    const addSearchQueryParameters = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(searchQueryData),
+    };
+
+    const addSearchQueryResponse = await fetch(
+      API_URL,
+      addSearchQueryParameters
+    );
+
+    if (!addSearchQueryResponse.ok) {
+      console.error("Error adding search query to the database");
+    }
+
     setRecentlySearchedArtists((prevSearches) => [
       { search_query: searchInput },
-      ...prevSearches.slice(0, 4), // Limit to the last 5 searches
+      ...prevSearches.slice(0, 4),
     ]);
   }
 

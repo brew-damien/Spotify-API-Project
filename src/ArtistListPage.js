@@ -1,15 +1,13 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-function ArtistListPage({ artists, selectArtist }) {
-  const reversedArtists = artists.slice().reverse();
-
+function ArtistListPage({ artists }) {
   return (
     <div className="container mx-auto">
       <section className="">
         <div className="mx-auto">
           <ul className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4">
-            {reversedArtists.map((artist) => (
+            {artists.map((artist) => (
               <li className="py-2 text-center font-bold" key={artist.id}>
                 <Link to={`/artist/${artist.id}/profile`} state={{ artist }}>
                   <img

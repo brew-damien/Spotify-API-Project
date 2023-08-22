@@ -9,15 +9,15 @@ import TrackPageDetails from "./TrackPageDetails";
 
 const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
 const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
-const API_URL = "http://localhost:3001/api/v1/history";
+const API_URL = "http://localhost:3001/api/v1/history"; // API endpoint for the search history
 
 function App() {
   const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [artists, setArtists] = useState([]);
-  const [recentlySearchedArtists, setRecentlySearchedArtists] = useState([]);
+  const [recentlySearchedArtists, setRecentlySearchedArtists] = useState([]); // State to store and display recent search history
   const [albums, setAlbums] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false); //State to show or hide search history
 
   useEffect(() => {
     const authParameters = {
@@ -33,6 +33,7 @@ function App() {
 
   const navigate = useNavigate();
 
+  // Use the useEffect hook to fetch recent search history when the component mounts
   useEffect(() => {
     async function fetchRecentSearches() {
       const url = `${API_URL}`;
@@ -43,7 +44,7 @@ function App() {
           throw new Error(`Fetch failed with status ${response.status}`);
         }
         const data = await response.json();
-        setRecentlySearchedArtists(data.reverse().slice(0, 5));
+        setRecentlySearchedArtists(data.reverse().slice(0, 5)); // Display the most recent 5 search queries
       } catch (error) {
         console.error("Error fetching recent searches:", error);
       }
@@ -65,6 +66,7 @@ function App() {
       `https://api.spotify.com/v1/search?q=${searchInput}&type=artist&limit=9`,
       searchParameters
     );
+
     const data = await response.json();
 
     if (data.artists && data.artists.items && data.artists.items.length > 0) {
@@ -74,6 +76,7 @@ function App() {
       alert("Artist not found. Please try another search term.");
     }
 
+    // Record the search query in the search history
     const searchTimestamp = new Date().toISOString();
     const searchQueryData = {
       search_query: searchInput,
@@ -97,11 +100,14 @@ function App() {
       console.error("Error adding search query to the database");
     }
 
-    setRecentlySearchedArtists((prevSearches) =>
-      [{ search_query: searchInput }, ...prevSearches.slice(0, 4)].slice(0, 5)
+    // Update the list of recently searched artists
+    setRecentlySearchedArtists(
+      (prevSearches) =>
+        [{ search_query: searchInput }, ...prevSearches.slice(0, 4)].slice(0, 5) // Keep the most recent 5 search queries
     );
   }
 
+  // Define a function to handle clicking on a recent search item
   function handleHistoryItemClick(searchQuery) {
     setSearchInput(searchQuery);
     search();
@@ -113,10 +119,13 @@ function App() {
         <div className="bg-gradient-to-b from-[#1cd760] to-black text-white pt-8 pb-12 w-full text-center">
           <h1 className="font-bold text-4xl xs:text-4xl">Spotify Search!</h1>
         </div>
+
+        {/* Search input and dropdown */}
         <div className="flex flex-col items-center justify-center mt-20">
           <div className="flex justify-center">
             <div className="mx-2 flex items-center relative">
               <div className="relative">
+                {/* Input for artist search */}
                 <input
                   className={`${
                     showDropdown ? "rounded-tl-md" : "rounded-l-md"
@@ -146,6 +155,7 @@ function App() {
             </div>
           </div>
 
+          {/* Recent search history dropdown */}
           <div
             className={`${
               showDropdown ? "block" : "hidden"

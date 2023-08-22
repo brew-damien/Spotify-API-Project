@@ -7,16 +7,19 @@ import ArtistProfilePage from "./ArtistProfilePage";
 import ArtistTracks from "./ArtistTracks";
 import TrackPageDetails from "./TrackPageDetails";
 
-const CLIENT_ID = process.env.REACT_APP_CLIENT_ID
-const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET
-// comment
+const CLIENT_ID = process.env.REACT_APP_CLIENT_ID;
+const CLIENT_SECRET = process.env.REACT_APP_CLIENT_SECRET;
+const API_URL = "http://localhost:3001/api/v1/history";
+
 function App() {
   const [searchInput, setSearchInput] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [artists, setArtists] = useState([]);
+  const [recentlySearchedArtists, setRecentlySearchedArtists] = useState([]);
   const [albums, setAlbums] = useState([]);
 
   useEffect(() => {
+    // Fetch access token
     const authParameters = {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -29,6 +32,26 @@ function App() {
   }, []);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Fetch recent search history
+    async function fetchRecentSearches() {
+      const url = `${API_URL}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Fetch failed with status ${response.status}`);
+        }
+        const data = await response.json();
+        setRecentlySearchedArtists(data);
+      } catch (error) {
+        console.error("Error fetching recent searches:", error);
+      }
+    }
+
+    fetchRecentSearches();
+  }, []);
 
   async function search() {
     const searchParameters = {
@@ -51,6 +74,12 @@ function App() {
     } else {
       alert("Artist not found. Please try another search term.");
     }
+
+    // After searching, add the search query to recently searched artists
+    setRecentlySearchedArtists((prevSearches) => [
+      { search_query: searchInput },
+      ...prevSearches.slice(0, 4), // Limit to the last 5 searches
+    ]);
   }
 
   async function selectArtist(artistID) {
@@ -73,13 +102,35 @@ function App() {
     navigate(`/artist/${artistID}`);
   }
 
+  // Render recent searches in your component
+  const renderRecentSearches = () => {
+    return (
+      <div className="mt-2">
+        {recentlySearchedArtists.length > 0 && (
+          <div className="text-center">
+            <p className="text-gray-500 text-sm">Recent Searches:</p>
+            <ul className="list-none">
+              {recentlySearchedArtists.slice(0, 5).map((artist, index) => (
+                <li key={index} className="text-gray-700 text-sm">
+                  {artist.search_query}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="bg-black">
-      <div className="container mx-auto bg-gray-100 min-h-screen">
-        <header>
-          <h1 className="font-bold text-center xs:text-4xl xs:pb-2">Spotify Search!</h1>
-          <div className="flex justify-center pb-4">
-            <div className="mx-2 items-center">
+      <div className="container mx-auto bg-black min-h-screen">
+        <div className="bg-gradient-to-b from-[#1cd760] to-black text-white pt-8 pb-12 w-full text-center">
+          <h1 className="font-bold text-4xl xs:text-4xl">Spotify Search!</h1>
+        </div>
+        <div className="flex flex-col items-center justify-center mt-20">
+          <div className="flex justify-center">
+            <div className="mx-2 flex items-center">
               <input
                 className="rounded-l-md border border-black xs:w-48 p-2"
                 placeholder="Search artist's name..."
@@ -91,19 +142,49 @@ function App() {
                 }}
                 onChange={(event) => setSearchInput(event.target.value)}
               />
-              <button className="rounded-r-md p-2 border-t border-b border-r border-black m-0" name="button" onClick={search}>
+              <button
+                className="bg-gray-100 rounded-r-md p-2 border-t border-b border-r border-black"
+                name="button"
+                onClick={search}
+              >
                 Search
               </button>
             </div>
           </div>
-        </header>
+
+          {/* Display recent searches */}
+          {renderRecentSearches()}
+        </div>
+
         <Routes>
-          <Route path="/artist" element={<ArtistListPage artists={artists} selectArtist={selectArtist} />} />
-          <Route path="/artist/:artistID/profile" element={<ArtistProfilePage accessToken={accessToken} />} />
-          <Route path="/artist/:artistID/profile/tracks" element={<ArtistTracks accessToken={accessToken} albums={albums} />} />
-          <Route path="/artist/:artistID/profile/tracks/:trackID" element={<TrackPageDetails accessToken={accessToken} />} />
-          <Route path="/artist/:artistID/profile/albums" element={<AlbumListPage accessToken={accessToken} albums={albums} />} />
-          <Route path="/artist/:artistID/profile/albums/:albumID" element={<AlbumPageDetails accessToken={accessToken} />} />
+          <Route
+            path="/artist"
+            element={
+              <ArtistListPage artists={artists} selectArtist={selectArtist} />
+            }
+          />
+          <Route
+            path="/artist/:artistID/profile"
+            element={<ArtistProfilePage accessToken={accessToken} />}
+          />
+          <Route
+            path="/artist/:artistID/profile/tracks"
+            element={<ArtistTracks accessToken={accessToken} albums={albums} />}
+          />
+          <Route
+            path="/artist/:artistID/profile/tracks/:trackID"
+            element={<TrackPageDetails accessToken={accessToken} />}
+          />
+          <Route
+            path="/artist/:artistID/profile/albums"
+            element={
+              <AlbumListPage accessToken={accessToken} albums={albums} />
+            }
+          />
+          <Route
+            path="/artist/:artistID/profile/albums/:albumID"
+            element={<AlbumPageDetails accessToken={accessToken} />}
+          />
         </Routes>
       </div>
     </div>

@@ -20,12 +20,20 @@ function ArtistProfilePage() {
     <div>
       <div className="text-center">
         <div className="flex justify-center items-center">
-          <a href={getSpotifyProfileURL()} target="_blank" rel="noopener noreferrer">
-            <img src={artist.images[0]?.url} className="xs:w-32 xs:h-32 w-48 h-48 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-60 lg:h-60 xl:w-72 xl:h-72 justify-items-center mx-auto rounded-full"/>
+          <a
+            href={getSpotifyProfileURL()}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <img
+              src={artist.images[0]?.url}
+              className="xs:w-32 xs:h-32 w-48 h-48 sm:w-40 sm:h-40 md:w-48 md:h-48 lg:w-60 lg:h-60 xl:w-72 xl:h-72 justify-items-center mx-auto rounded-full"
+            />
           </a>
         </div>
         <h3>
-          <a className="font-semibold text-xl underline"
+          <a
+            className="font-semibold text-xl underline"
             href={getSpotifyProfileURL()}
             target="_blank"
             rel="noopener noreferrer"

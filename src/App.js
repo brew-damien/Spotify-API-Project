@@ -17,6 +17,7 @@ function App() {
   const [artists, setArtists] = useState([]);
   const [recentlySearchedArtists, setRecentlySearchedArtists] = useState([]);
   const [albums, setAlbums] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const authParameters = {
@@ -42,7 +43,8 @@ function App() {
           throw new Error(`Fetch failed with status ${response.status}`);
         }
         const data = await response.json();
-        setRecentlySearchedArtists(data);
+        // Reverse the order of recent searches so that the newest is at the top
+        setRecentlySearchedArtists(data.reverse().slice(0, 5)); // Limit to 5 items
       } catch (error) {
         console.error("Error fetching recent searches:", error);
       }
@@ -73,7 +75,6 @@ function App() {
       alert("Artist not found. Please try another search term.");
     }
 
-    // After searching, add the search query and time to the database
     const searchTimestamp = new Date().toISOString();
     const searchQueryData = {
       search_query: searchInput,
@@ -97,51 +98,16 @@ function App() {
       console.error("Error adding search query to the database");
     }
 
-    setRecentlySearchedArtists((prevSearches) => [
-      { search_query: searchInput },
-      ...prevSearches.slice(0, 4),
-    ]);
+    // Reverse the order of recent searches after adding the new search
+    setRecentlySearchedArtists((prevSearches) =>
+      [{ search_query: searchInput }, ...prevSearches.slice(0, 4)].slice(0, 5)
+    ); // Limit to 5 items
   }
 
-  async function selectArtist(artistID) {
-    const searchParameters = {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    };
-
-    const albumResponse = await fetch(
-      `https://api.spotify.com/v1/artists/${artistID}/albums?include_groups=album&market=US&limit=50`,
-      searchParameters
-    );
-
-    const albumData = await albumResponse.json();
-    setAlbums(albumData.items);
-
-    navigate(`/artist/${artistID}`);
+  function handleHistoryItemClick(searchQuery) {
+    setSearchInput(searchQuery);
+    search();
   }
-
-  // Render recent searches in your component
-  const renderRecentSearches = () => {
-    return (
-      <div className="mt-2">
-        {recentlySearchedArtists.length > 0 && (
-          <div className="text-center">
-            <p className="text-gray-500 text-sm">Recent Searches:</p>
-            <ul className="list-none">
-              {recentlySearchedArtists.slice(0, 5).map((artist, index) => (
-                <li key={index} className="text-gray-700 text-sm">
-                  {artist.search_query}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  };
 
   return (
     <div className="bg-black">
@@ -151,38 +117,68 @@ function App() {
         </div>
         <div className="flex flex-col items-center justify-center mt-20">
           <div className="flex justify-center">
-            <div className="mx-2 flex items-center">
-              <input
-                className="rounded-l-md border border-black xs:w-48 p-2"
-                placeholder="Search artist's name..."
-                type="input"
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    search();
-                  }
-                }}
-                onChange={(event) => setSearchInput(event.target.value)}
-              />
-              <button
-                className="bg-gray-100 rounded-r-md p-2 border-t border-b border-r border-black"
-                name="button"
-                onClick={search}
-              >
-                Search
-              </button>
+            <div className="mx-2 flex items-center relative">
+              <div className="relative">
+                <input
+                  className={`${
+                    showDropdown ? "rounded-tl-md" : "rounded-l-md"
+                  } border border-black xs:w-48 p-2 focus:outline-none"`}
+                  placeholder="Search artist's name..."
+                  type="input"
+                  value={searchInput}
+                  onChange={(event) => setSearchInput(event.target.value)}
+                  onFocus={() => setShowDropdown(true)}
+                  onBlur={() => setShowDropdown(false)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      search();
+                    }
+                  }}
+                />
+                <button
+                  className={`${
+                    showDropdown ? "rounded-tr-md" : "rounded-r-md"
+                  } bg-gray-100 p-2 border-0 hover:bg-gray-200 focus:outline-none ml-0"`}
+                  name="button"
+                  onClick={search}
+                >
+                  Search
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Display recent searches */}
-          {renderRecentSearches()}
+          <div
+            className={`${
+              showDropdown ? "block" : "hidden"
+            } flex flex-col bg-white shadow-md rounded-b-md`}
+          >
+            {recentlySearchedArtists.length > 0 && (
+              <div className="mx-2 pl-5 pr-28">
+                <p className="text-gray-700 text-sm">Recent Searches:</p>
+                <ul className="list-none">
+                  {recentlySearchedArtists.map((artist, index) => (
+                    <li className="hover:text-gray-500" key={index}>
+                      <button
+                        className="text-sm hover:underline"
+                        onClick={() =>
+                          handleHistoryItemClick(artist.search_query)
+                        }
+                      >
+                        {artist.search_query}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
         </div>
 
         <Routes>
           <Route
             path="/artist"
-            element={
-              <ArtistListPage artists={artists} selectArtist={selectArtist} />
-            }
+            element={<ArtistListPage artists={artists} />}
           />
           <Route
             path="/artist/:artistID/profile"
